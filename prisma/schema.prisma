@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  avatarUrl String?  @map("avatar_url")
+  
+  // Settings
+  theme         String  @default("light") // "light" | "dark"
+  fontFamily    String  @default("Georgia") @map("font_family")
+  fontSize      Int     @default(16) @map("font_size")
+  focusModeFont String  @default("Georgia") @map("focus_mode_font")
+  focusModeSize Int     @default(18) @map("focus_mode_size")
+  
+  books     Book[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Book {
+  id          String     @id @default(uuid())
+  title       String
+  synopsis    String?
+  genre       String?
+  coverUrl    String?    @map("cover_url")
+  coverColor  String?    @map("cover_color") @default("#f4a7bb")
+  status      BookStatus @default(DRAFT)
+  
+  userId      String     @map("user_id")
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  chapters    Chapter[]
+  
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  @@map("books")
+}
+
+model Chapter {
+  id        String        @id @default(uuid())
+  title     String
+  content   Json?         // TipTap JSON content
+  notes     String?
+  status    ChapterStatus @default(DRAFT)
+  order     Int           @default(0)
+  wordCount Int           @default(0) @map("word_count")
+  charCount Int           @default(0) @map("char_count")
+  
+  bookId    String        @map("book_id")
+  book      Book          @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  
+  versions  ChapterVersion[]
+
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+
+  @@map("chapters")
+}
+
+model ChapterVersion {
+  id        String   @id @default(uuid())
+  content   Json     // TipTap JSON content snapshot
+  wordCount Int      @default(0) @map("word_count")
+  label     String?  // Optional label like "before major rewrite"
+  
+  chapterId String   @map("chapter_id")
+  chapter   Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("chapter_versions")
+}
+
+enum BookStatus {
+  DRAFT
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum ChapterStatus {
+  DRAFT
+  REVISION
+  COMPLETED
+}
