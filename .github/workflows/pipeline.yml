@@ -19,14 +19,14 @@ jobs:
       run: |
         npm run build
 
-deploy:
-    needs: build
-    runs-on: ubuntu-latest
+  deploy:
+      needs: build
+      runs-on: ubuntu-latest
 
-    steps:
-    - uses: actions/checkout@v4
+      steps:
+      - uses: actions/checkout@v4
 
-    - name: Deploy to production
-      run: |
-        echo "Deploying to production..."
-        curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
+      - name: Deploy to production
+        run: |
+          echo "Deploying to production..."
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
