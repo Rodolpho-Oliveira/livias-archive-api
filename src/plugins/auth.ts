@@ -1,7 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import fp from 'fastify-plugin'
-import { verifyToken } from '../lib/supabase.js'
-import { prisma } from '../lib/prisma.js'
+import { verifyToken } from '../lib/auth.js'
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -13,8 +12,9 @@ async function authPlugin(fastify: FastifyInstance) {
   fastify.decorateRequest('userId', '')
 
   fastify.addHook('onRequest', async (request: FastifyRequest, reply: FastifyReply) => {
-    // Skip auth for health check
+    // Skip auth for health check and auth routes
     if (request.url === '/health') return
+    if (request.url.startsWith('/api/auth')) return
 
     const authHeader = request.headers.authorization
     if (!authHeader?.startsWith('Bearer ')) {
@@ -24,20 +24,7 @@ async function authPlugin(fastify: FastifyInstance) {
     const token = authHeader.replace('Bearer ', '')
 
     try {
-      const user = await verifyToken(token)
-      
-      // Upsert user in our database
-      await prisma.user.upsert({
-        where: { id: user.id },
-        update: { email: user.email! },
-        create: {
-          id: user.id,
-          email: user.email!,
-          name: user.user_metadata?.full_name || user.email!.split('@')[0],
-        },
-      })
-
-      request.userId = user.id
+      request.userId = verifyToken(token)
     } catch {
       return reply.status(401).send({ error: 'Invalid token' })
     }

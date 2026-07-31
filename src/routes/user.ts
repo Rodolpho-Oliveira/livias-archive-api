@@ -16,6 +16,19 @@ export async function userRoutes(fastify: FastifyInstance) {
   fastify.get('/me', async (request) => {
     const user = await prisma.user.findUnique({
       where: { id: request.userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        avatarUrl: true,
+        theme: true,
+        fontFamily: true,
+        fontSize: true,
+        focusModeFont: true,
+        focusModeSize: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     })
     return user
   })
@@ -27,6 +40,19 @@ export async function userRoutes(fastify: FastifyInstance) {
     const user = await prisma.user.update({
       where: { id: request.userId },
       data: body,
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        avatarUrl: true,
+        theme: true,
+        fontFamily: true,
+        fontSize: true,
+        focusModeFont: true,
+        focusModeSize: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     })
 
     return user

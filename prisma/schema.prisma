@@ -3,29 +3,46 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  name      String?
-  avatarUrl String?  @map("avatar_url")
-  
+  id           String  @id @default(uuid())
+  email        String  @unique
+  name         String?
+  passwordHash String? @map("password_hash")
+  avatarUrl    String? @map("avatar_url")
+
   // Settings
   theme         String  @default("light") // "light" | "dark"
   fontFamily    String  @default("Georgia") @map("font_family")
   fontSize      Int     @default(16) @map("font_size")
   focusModeFont String  @default("Georgia") @map("focus_mode_font")
   focusModeSize Int     @default(18) @map("focus_mode_size")
-  
-  books     Book[]
+
+  books  Book[]
+  images Image[]
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("users")
+}
+
+model Image {
+  id        String   @id @default(uuid())
+  name      String
+  mimeType  String   @map("mime_type")
+  size      Int
+  data      Bytes
+
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("images")
 }
 
 model Book {
