@@ -6,6 +6,8 @@ const createBookSchema = z.object({
   title: z.string().min(1),
   synopsis: z.string().optional(),
   genre: z.string().optional(),
+  subtitle: z.string().optional(),
+  coverUrl: z.string().optional(),
   coverColor: z.string().optional(),
 })
 
@@ -13,6 +15,7 @@ const updateBookSchema = z.object({
   title: z.string().min(1).optional(),
   synopsis: z.string().optional(),
   genre: z.string().optional(),
+  subtitle: z.string().optional(),
   coverUrl: z.string().optional(),
   coverColor: z.string().optional(),
   status: z.enum(['DRAFT', 'IN_PROGRESS', 'COMPLETED']).optional(),

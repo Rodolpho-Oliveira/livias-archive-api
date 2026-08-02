@@ -52,6 +52,7 @@ model Book {
   genre       String?
   coverUrl    String?    @map("cover_url")
   coverColor  String?    @map("cover_color") @default("#f4a7bb")
+  subtitle    String?
   status      BookStatus @default(DRAFT)
   
   userId      String     @map("user_id")
