@@ -10,6 +10,7 @@ import { userRoutes } from './routes/user.js'
 import { exportRoutes } from './routes/export.js'
 import { uploadRoutes } from './routes/upload.js'
 import { imageRoutes } from './routes/images.js'
+import { aiRoutes } from './routes/ai.js'
 
 const app = Fastify({
   logger: true,
@@ -44,6 +45,7 @@ app.register(userRoutes, { prefix: '/api' })
 app.register(exportRoutes, { prefix: '/api' })
 app.register(uploadRoutes, { prefix: '/api' })
 app.register(imageRoutes, { prefix: '/api' })
+app.register(aiRoutes, { prefix: '/api' })
 
 const port = Number(process.env.PORT) || 3333
 
