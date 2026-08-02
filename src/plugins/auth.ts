@@ -12,9 +12,12 @@ async function authPlugin(fastify: FastifyInstance) {
   fastify.decorateRequest('userId', '')
 
   fastify.addHook('onRequest', async (request: FastifyRequest, reply: FastifyReply) => {
-    // Skip auth for health check and auth routes
+    // Skip auth for health check, auth routes, and image serving
+    // (image URLs are embedded in the rich editor HTML, which cannot send
+    // Authorization headers; images are protected by unguessable UUIDs)
     if (request.url === '/health') return
     if (request.url.startsWith('/api/auth')) return
+    if (request.url.startsWith('/api/images/')) return
 
     const authHeader = request.headers.authorization
     if (!authHeader?.startsWith('Bearer ')) {

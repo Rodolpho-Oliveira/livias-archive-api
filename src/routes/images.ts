@@ -6,8 +6,8 @@ export async function imageRoutes(fastify: FastifyInstance) {
   fastify.get('/images/:id', async (request, reply) => {
     const { id } = request.params as { id: string }
 
-    const image = await prisma.image.findFirst({
-      where: { id, userId: request.userId },
+    const image = await prisma.image.findUnique({
+      where: { id },
     })
 
     if (!image) {
